@@ -3,13 +3,21 @@ const $arenas = document.querySelector('.arenas');
 subZero = {
     name: 'SubZero',
     hp: 50,
-    img: 'http://reactmarathon-api.herokuapp.com/assets/subzero.gif'
+    img: 'http://reactmarathon-api.herokuapp.com/assets/subzero.gif',
+    weapon: ['ice'],
+    attack: function () {
+        console.log(this.name + 'Fight...');
+    },
 };
 
 scorpion = {
     name: 'Scorpion',
     hp: 20,
-    img: 'http://reactmarathon-api.herokuapp.com/assets/scorpion.gif'
+    img: 'http://reactmarathon-api.herokuapp.com/assets/scorpion.gif',
+    weapon: ['fire'],
+    attack: function () {
+        console.log(this.name + ' Fight...');
+    },
 };
 
 function createPlayer(playerNumber, playerObject) {
@@ -37,6 +45,8 @@ function createPlayer(playerNumber, playerObject) {
     $img.src = playerObject.img;
     $player.appendChild($character);
     $character.appendChild($img);
+
+    playerObject.attack();
 }
 createPlayer('player1', subZero)
 createPlayer('player2', scorpion)
