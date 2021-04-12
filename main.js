@@ -52,9 +52,39 @@ const characters = {
 
 player1 = characters['subzero'];
 player1.player = 1;
+player1.elHP = function () {
+    return document.querySelector('.player' + this.player + ' .life');
+};
+player1.changeHP = function (damage) {
+    $playerLife = this.elHP;
+    //damage = Math.ceil(Math.random() * 20);
+    this.hp -= damage;
+    if (this.hp < 0) {
+        this.hp = 0;
+    };
+};
+player1.renderHP = function () {
+    this.elHP().style.width = this.hp + '%';
+};
+
 
 player2 = characters['scorpion'];
 player2.player = 2;
+player2.elHP = function () {
+    return document.querySelector('.player' + this.player + ' .life');
+};
+player2.changeHP = function (damage) {
+    $playerLife = this.elHP;
+    //damage = Math.ceil(Math.random() * 20);
+    this.hp -= damage;
+    if (this.hp < 0) {
+        this.hp = 0;
+    }
+};
+player2.renderHP = function () {
+    this.elHP().style.width = this.hp + '%';
+};
+
 
 function createElement(tag, className) {
     $tag = document.createElement(tag);
@@ -84,15 +114,15 @@ function createPlayer(playerObject) {
     return $player;
 }
 
-function changeHP(player) {
-    $playerLife = document.querySelector('.player' + player.player + ' .life');
-    damage = Math.ceil(Math.random() * 20);
-    player.hp -= damage;
-    if (player.hp < 0) {
-        player.hp = 0;
-    }
-    $playerLife.style.width = player.hp + '%';
-}
+//function changeHP(player) {
+//$playerLife = document.querySelector('.player' + player.player + ' .life');
+//damage = Math.ceil(Math.random() * 20);
+//player.hp -= damage;
+//if (player.hp < 0) {
+//    player.hp = 0;
+//}
+//$playerLife.style.width = player.hp + '%';
+//};
 
 function checkEnd() {
     if (player1.hp == 0 || player2.hp == 0) {
@@ -120,8 +150,12 @@ $arenas.appendChild(createPlayer(player1));
 $arenas.appendChild(createPlayer(player2));
 
 $randomButton.addEventListener('click', function () {
-    changeHP(player1);
-    changeHP(player2);
+    //changeHP(player1);
+    //changeHP(player2);
+    player1.changeHP(Math.ceil(Math.random() * 20));
+    player2.changeHP(Math.ceil(Math.random() * 20));
+    player1.renderHP();
+    player2.renderHP();
     if (checkEnd()) {
         $randomButton.disabled = true;
         chooseWinner();
