@@ -2,8 +2,8 @@ const $arenas = document.querySelector('.arenas');
 const $randomButton = document.querySelector('.button');
 let winner = "No winner";
 
-characters = {
-    'subzero': {
+const characters = {
+    subzero: {
         name: 'SubZero',
         hp: 100,
         img: 'http://reactmarathon-api.herokuapp.com/assets/subzero.gif',
@@ -12,7 +12,7 @@ characters = {
             console.log(this.name + 'Fight...');
         },
     },
-    'scorpion': {
+    scorpion: {
         name: 'Scorpion',
         hp: 100,
         img: 'http://reactmarathon-api.herokuapp.com/assets/scorpion.gif',
@@ -21,7 +21,7 @@ characters = {
             console.log(this.name + ' Fight...');
         },
     },
-    'kitana': {
+    kitana: {
         name: 'Kitana',
         hp: 100,
         img: 'http://reactmarathon-api.herokuapp.com/assets/kitana.gif',
@@ -30,7 +30,7 @@ characters = {
             console.log(this.name + ' Fight...');
         },
     },
-    'liukang': {
+    liukang: {
         name: 'LiuKang',
         hp: 100,
         img: 'http://reactmarathon-api.herokuapp.com/assets/liukang.gif',
@@ -39,7 +39,7 @@ characters = {
             console.log(this.name + ' Fight...');
         },
     },
-    'sonya': {
+    sonya: {
         name: 'Sonya',
         hp: 100,
         img: 'http://reactmarathon-api.herokuapp.com/assets/sonya.gif',
@@ -88,26 +88,24 @@ function changeHP(player) {
     $playerLife = document.querySelector('.player' + player.player + ' .life');
     damage = Math.ceil(Math.random() * 20);
     player.hp -= damage;
-    if (player.hp >= 0) {
-        $playerLife.style.width = player.hp + '%';
+    if (player.hp < 0) {
+        player.hp = 0;
     }
-    else {
-        $playerLife.style.width = '0%';
-    }
+    $playerLife.style.width = player.hp + '%';
 }
 
 function checkEnd() {
-    if (player1.hp <= 0 || player2.hp <= 0) {
+    if (player1.hp == 0 || player2.hp == 0) {
         return true;
     }
     return false;
 }
 
 function chooseWinner() {
-    if (player1.hp <= 0 && player2.hp > 0) {
+    if (player1.hp == 0 && player2.hp > 0) {
         winner = player2.name + ' wins';
     }
-    else if (player1.hp > 0 && player2.hp <= 0) {
+    else if (player1.hp > 0 && player2.hp == 0) {
         winner = player1.name + ' wins';
     }
     else {
