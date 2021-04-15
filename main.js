@@ -59,38 +59,21 @@ const HIT = {
 
 const ATTACK = ['head', 'body', 'foot'];
 
-player1 = characters['subzero'];
-player1.player = 1;
-player1.elHP = function () {
+function elHP() {
     return document.querySelector('.player' + this.player + ' .life');
 }
-player1.changeHP = function (damage) {
+
+function renderHP() {
+    this.elHP().style.width = this.hp + '%';
+}
+
+function changeHP(damage) {
     $playerLife = this.elHP;
     this.hp -= damage;
     if (this.hp < 0) {
         this.hp = 0;
     }
 }
-player1.renderHP = function () {
-    this.elHP().style.width = this.hp + '%';
-}
-
-player2 = characters['scorpion'];
-player2.player = 2;
-player2.elHP = function () {
-    return document.querySelector('.player' + this.player + ' .life');
-}
-player2.changeHP = function (damage) {
-    $playerLife = this.elHP;
-    this.hp -= damage;
-    if (this.hp < 0) {
-        this.hp = 0;
-    }
-}
-player2.renderHP = function () {
-    this.elHP().style.width = this.hp + '%';
-}
-
 
 function createElement(tag, className) {
     $tag = document.createElement(tag);
@@ -142,9 +125,6 @@ function chooseWinner() {
     $arenas.appendChild($winTitle);
 }
 
-$arenas.appendChild(createPlayer(player1));
-$arenas.appendChild(createPlayer(player2));
-
 function getRandom(base) {
     return Math.ceil(Math.random() * base);
 }
@@ -173,6 +153,26 @@ function createReloadButton() {
 }
 
 
+player1 = {
+    player: 1,
+    elHP,
+    renderHP,
+    changeHP,
+}
+Object.assign(player1, characters.subzero);
+
+player2 = {
+    player: 2,
+    elHP,
+    renderHP,
+    changeHP,
+}
+Object.assign(player2, characters.scorpion);
+
+
+$arenas.appendChild(createPlayer(player1));
+$arenas.appendChild(createPlayer(player2));
+
 $formFight.addEventListener('submit', function (e) {
     e.preventDefault();
     const enemy = enemyAttack();
@@ -199,6 +199,7 @@ $formFight.addEventListener('submit', function (e) {
     }
     player1.renderHP();
     player2.renderHP();
+
     if (checkEnd()) {
         $formFight[6].disabled = true;
         chooseWinner();
