@@ -1,5 +1,6 @@
 const $arenas = document.querySelector('.arenas');
 const $randomButton = document.querySelector('.button');
+const $submitButton = document.querySelector('.control');
 let winner = "No winner";
 
 const characters = {
@@ -138,13 +139,15 @@ function chooseWinner() {
 $arenas.appendChild(createPlayer(player1));
 $arenas.appendChild(createPlayer(player2));
 
-$randomButton.addEventListener('click', function () {
-    player1.changeHP(Math.ceil(Math.random() * 20));
-    player2.changeHP(Math.ceil(Math.random() * 20));
-    player1.renderHP();
-    player2.renderHP();
-    if (checkEnd()) {
-        $randomButton.disabled = true;
-        chooseWinner();
-    }
-})
+
+
+// $randomButton.addEventListener('click', function () {
+//     player1.changeHP(Math.ceil(Math.random() * 20));
+//     player2.changeHP(Math.ceil(Math.random() * 20));
+//     player1.renderHP();
+//     player2.renderHP();
+//     if (checkEnd()) {
+//         $randomButton.disabled = true;
+//         chooseWinner();
+//     }
+// })
