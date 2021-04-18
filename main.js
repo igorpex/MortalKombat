@@ -172,7 +172,7 @@ Object.assign(player2, characters.scorpion);
 
 $arenas.appendChild(createPlayer(player1));
 $arenas.appendChild(createPlayer(player2));
-console.log(logs);
+console.log(logs['end']);
 
 $formFight.addEventListener('submit', function (e) {
     e.preventDefault();
