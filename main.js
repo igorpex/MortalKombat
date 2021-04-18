@@ -196,7 +196,7 @@ function generateLogs(type, playerKick, playerDefence, hpDiff) {
             break;
         case 'end':
             text = logs[type][messageNumber].replace('[playerWins]', playerKick.name).replace('[playerLose]', playerDefence.name);
-            el = `<p>${time} - ${text}`;
+            el = `<p>${time} - ${text}</p>`;
             break;
         case 'hit':
             text = logs[type][messageNumber].replace('[playerKick]', playerKick.name).replace('[playerDefence]', playerDefence.name);
