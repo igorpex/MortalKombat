@@ -7,7 +7,7 @@ const characters = {
     subzero: {
         name: 'SubZero',
         hp: 100,
-        img: 'http://reactmarathon-api.herokuapp.com/assets/subzero.gif',
+        img: 'https://reactmarathon-api.herokuapp.com/assets/subzero.gif',
         weapon: ['ice'],
         attack: function () {
             console.log(this.name + 'Fight...');
@@ -16,7 +16,7 @@ const characters = {
     scorpion: {
         name: 'Scorpion',
         hp: 100,
-        img: 'http://reactmarathon-api.herokuapp.com/assets/scorpion.gif',
+        img: 'https://reactmarathon-api.herokuapp.com/assets/scorpion.gif',
         weapon: ['fire'],
         attack: function () {
             console.log(this.name + ' Fight...');
@@ -25,7 +25,7 @@ const characters = {
     kitana: {
         name: 'Kitana',
         hp: 100,
-        img: 'http://reactmarathon-api.herokuapp.com/assets/kitana.gif',
+        img: 'https://reactmarathon-api.herokuapp.com/assets/kitana.gif',
         weapon: ['boobs'],
         attack: function () {
             console.log(this.name + ' Fight...');
@@ -34,7 +34,7 @@ const characters = {
     liukang: {
         name: 'LiuKang',
         hp: 100,
-        img: 'http://reactmarathon-api.herokuapp.com/assets/liukang.gif',
+        img: 'https://reactmarathon-api.herokuapp.com/assets/liukang.gif',
         weapon: ['legs'],
         attack: function () {
             console.log(this.name + ' Fight...');
@@ -43,7 +43,7 @@ const characters = {
     sonya: {
         name: 'Sonya',
         hp: 100,
-        img: 'http://reactmarathon-api.herokuapp.com/assets/sonya.gif',
+        img: 'https://reactmarathon-api.herokuapp.com/assets/sonya.gif',
         weapon: ['face'],
         attack: function () {
             console.log(this.name + ' Fight...');
@@ -172,6 +172,7 @@ Object.assign(player2, characters.scorpion);
 
 $arenas.appendChild(createPlayer(player1));
 $arenas.appendChild(createPlayer(player2));
+console.log(logs[end]);
 
 $formFight.addEventListener('submit', function (e) {
     e.preventDefault();
