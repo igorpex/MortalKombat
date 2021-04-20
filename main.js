@@ -1,77 +1,27 @@
+import { characters } from './characters.js'
+import { logs } from './logs.js';
+import { getRandom, createElement } from './utils.js';
+//import { characters, logs, bodyAreas, };
+
 //DOM Objects to work with
 const $arenas = document.querySelector('.arenas');
 const $fightButton = document.querySelector('.buttonWrap');
 const $formFight = document.querySelector('.control');
 const $chat = document.querySelector('.chat');
-let winner = "No winner";
-
-//fighter characters
-const characters = {
-    subzero: {
-        name: 'SubZero',
-        hp: 100,
-        img: 'https://reactmarathon-api.herokuapp.com/assets/subzero.gif',
-        weapon: ['ice'],
-        attack: function () {
-            console.log(this.name + 'Fight...');
-        },
-    },
-    scorpion: {
-        name: 'Scorpion',
-        hp: 100,
-        img: 'https://reactmarathon-api.herokuapp.com/assets/scorpion.gif',
-        weapon: ['fire'],
-        attack: function () {
-            console.log(this.name + ' Fight...');
-        },
-    },
-    kitana: {
-        name: 'Kitana',
-        hp: 100,
-        img: 'https://reactmarathon-api.herokuapp.com/assets/kitana.gif',
-        weapon: ['boobs'],
-        attack: function () {
-            console.log(this.name + ' Fight...');
-        },
-    },
-    liukang: {
-        name: 'LiuKang',
-        hp: 100,
-        img: 'https://reactmarathon-api.herokuapp.com/assets/liukang.gif',
-        weapon: ['legs'],
-        attack: function () {
-            console.log(this.name + ' Fight...');
-        },
-    },
-    sonya: {
-        name: 'Sonya',
-        hp: 100,
-        img: 'https://reactmarathon-api.herokuapp.com/assets/sonya.gif',
-        weapon: ['face'],
-        attack: function () {
-            console.log(this.name + ' Fight...');
-        },
-    }
-}
 
 ////attack variables
 //attack powers
-const HIT = {
+const hitPowers = {
     head: 30,
     body: 25,
     foot: 20,
 }
-//attack areas
-const ATTACK = ['head', 'body', 'foot'];
-
-//random number generator
-function getRandom(base) {
-    return Math.ceil(Math.random() * base);
-}
+//body areas
+const bodyAreas = ['head', 'body', 'foot'];
 
 //create player objects and add players to the field
-function initialazePlayers(character1, character2) {
-    player1 = {
+const initialazePlayers = (character1, character2) => {
+    const player1 = {
         player: 1,
         elHP,
         renderHP,
@@ -79,7 +29,7 @@ function initialazePlayers(character1, character2) {
     }
     Object.assign(player1, characters[character1]);
 
-    player2 = {
+    const player2 = {
         player: 2,
         elHP,
         renderHP,
@@ -90,15 +40,11 @@ function initialazePlayers(character1, character2) {
     $arenas.appendChild(createPlayer(player1));
     $arenas.appendChild(createPlayer(player2));
     generateLogs('start', player1, player2, 0);
+    return [player1, player2];
 }
-function createElement(tag, className) {
-    $tag = document.createElement(tag);
-    if (className) {
-        $tag.classList.add(className);
-    }
-    return $tag;
-}
-function createPlayer(playerObject) {
+
+//add players to the field
+const createPlayer = (playerObject) => {
     const $player = createElement('div', 'player' + playerObject.player);
     const $progressbar = createElement('div', 'progressbar');
     const $life = createElement('div', 'life');
@@ -119,20 +65,22 @@ function createPlayer(playerObject) {
 }
 
 //generate player2(Enemy) attack randomly
-function enemyAttack() {
-    const hit = ATTACK[getRandom(3) - 1];
-    const defence = ATTACK[getRandom(3) - 1];
+const randomAttack = () => {
+    const hit = bodyAreas[getRandom(3) - 1];
+    const defence = bodyAreas[getRandom(3) - 1];
     return {
-        value: getRandom(HIT[hit]),
+        value: getRandom(hitPowers[hit]),
         hit,
         defence,
     }
 }
-//read type of attack and defence and generate attack value 
+
+//makre player1 attack based on form 
 function playerAttack($formFight) {
+    var value, hit, defence;
     for (let item of $formFight) {
         if (item.checked && item.name === 'hit') {
-            value = getRandom(HIT[item.value]);
+            value = getRandom(hitPowers[item.value]);
             hit = item.value;
             item.checked = false;
         }
@@ -149,7 +97,7 @@ function playerAttack($formFight) {
 }
 
 //main fight logics
-function fightLogic(attack, enemy) {
+function fightLogic(player1, player2, attack, enemy) {
     //check if player1(attacker) hits player2
     if (attack.hit !== enemy.defence) {
         player2.changeHP(attack.value);
@@ -175,7 +123,7 @@ function renderHP() {
     this.elHP().style.width = this.hp + '%';
 }
 function changeHP(damage) {
-    $playerLife = this.elHP;
+    const $playerLife = this.elHP;
     this.hp -= damage;
     if (this.hp < 0) {
         this.hp = 0;
@@ -183,8 +131,8 @@ function changeHP(damage) {
 }
 
 //fight logs generator
-function generateLogs(type, playerKick, playerDefence, hpDiff) {
-    messageNumber = getRandom(logs[type].length) - 1;
+const generateLogs = (type, playerKick, playerDefence, hpDiff) => {
+    const messageNumber = getRandom(logs[type].length) - 1;
     let date = new Date();
     let time = date.getHours() + ':' + String(date.getMinutes()).padStart(2, '0') + ':' + String(date.getSeconds()).padStart(2, '0');
     let text = '';
@@ -216,7 +164,7 @@ function generateLogs(type, playerKick, playerDefence, hpDiff) {
 }
 
 //checking if game should be finished
-function checkEnd() {
+const checkEnd = (player1, player2) => {
     if (player1.hp == 0 || player2.hp == 0) {
         return true;
     }
@@ -224,7 +172,8 @@ function checkEnd() {
 }
 
 //choose winner
-function chooseWinner() {
+const chooseWinner = (player1, player2) => {
+    var winner;
     if (player1.hp == 0 && player2.hp > 0) {
         winner = player2.name + ' wins';
         generateLogs('end', player2, player1);
@@ -243,7 +192,7 @@ function chooseWinner() {
 }
 
 //create Reload button after game finish
-function createReloadButton() {
+const createReloadButton = () => {
     const $reloadButtonDiv = createElement('div', 'reloadWrap');
     const $reloadButton = createElement('button', 'button');
     $reloadButton.innerText = 'Reload';
@@ -260,25 +209,26 @@ function createReloadButton() {
 function main() {
 
     //create players and put to the field
-    initialazePlayers('scorpion', 'subzero')
+    const [player1, player2] = initialazePlayers('scorpion', 'subzero');
 
     //check the Fight button
     $formFight.addEventListener('submit', function (e) {
         e.preventDefault();
 
         //generate player2(Enemy) attack randomly
-        const enemy = enemyAttack();
+        const enemy = randomAttack();
 
         //from form, read for player1: 1) type of attack 2) type of defence, 3) generate random attack value based on type of attack
         const attack = playerAttack($formFight);
+        //const attack = randomAttack(); //just for test cases for quick clicks
 
         //in-fight logic
-        fightLogic(attack, enemy);
+        fightLogic(player1, player2, attack, enemy);
 
         //game finish
-        if (checkEnd()) {
+        if (checkEnd(player1, player2)) {
             $formFight[6].disabled = true;
-            chooseWinner();
+            chooseWinner(player1, player2);
             createReloadButton();
         }
     })
