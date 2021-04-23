@@ -19,6 +19,19 @@ const hitPowers = {
 //body areas
 const bodyAreas = ['head', 'body', 'foot'];
 
+class Player {
+    constructor(props) {
+        this.player = props.player;
+        this.name = props.name;
+        this.hp = props.hp;
+        this.img = props.img;
+        this.weapon = props.weapon;
+        this.attack = props.attack;
+    }
+}
+const player3 = new Player(Object.assign(characters['scorpion'], {player:3}));
+console.log(player3);
+
 //create player objects and add players to the field
 const initialazePlayers = (character1, character2) => {
     const player1 = {
