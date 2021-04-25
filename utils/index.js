@@ -4,7 +4,7 @@ export const getRandom = (base) => {
 }
 
 //creates DOM element based on tag and class name
-export function createElement(tag, className) {
+export const createElement = (tag, className) => {
     const $tag = document.createElement(tag);
     if (className) {
         $tag.classList.add(className);
