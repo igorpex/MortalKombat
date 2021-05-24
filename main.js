@@ -1,4 +1,4 @@
-import { characters } from './characters.js'
+// import { characters } from './characters.js'
 import { LOGS, HITPOWERS, BODYAREAS } from './constants/index.js';
 import { getRandom, createElement } from './utils/index.js';
 import Player from './Player/index.js';
@@ -10,50 +10,19 @@ const $fightButton = document.querySelector('.buttonWrap');
 const $formFight = document.querySelector('.control');
 const $chat = document.querySelector('.chat');
 
-
-
-// //generate player2(Enemy) attack randomly
-// const randomAttack = () => {
-//     const hit = BODYAREAS[getRandom(3) - 1];
-//     const defence = BODYAREAS[getRandom(3) - 1];
-//     return {
-//         value: getRandom(HITPOWERS[hit]),
-//         hit,
-//         defence,
-//     }
-// }
-
-// //make player1 attack based on form 
-// function playerAttack($formFight) {
-//     var value, hit, defence;
-//     for (let item of $formFight) {
-//         if (item.checked && item.name === 'hit') {
-//             value = getRandom(HITPOWERS[item.value]);
-//             hit = item.value;
-//             item.checked = false;
-//         }
-//         if (item.checked && item.name === 'defence') {
-//             defence = item.value;
-//             item.checked = false;
-//         }
-//     }
-//     return {
-//         value,
-//         hit,
-//         defence,
-//     }
-// }
-
-
+let player1;
+let player2;
 
 //main logic
 class Game {
 
-    start = function() {
-        const character1 = 'scorpion';
-        const character2 = 'subzero';
-        const player1 = new Player(Object.assign(characters[character1], { player: 1 }));
-        const player2 = new Player(Object.assign(characters[character2], { player: 2 }));
+    start = async () => {
+        // let players = await this.getPlayers();
+        const p1= await this.getRandomPlayer();
+        const p2 = await this.getRandomPlayer();
+        player1 = new Player(
+            {...p1, player: 1,});
+        player2 = new Player({...p2, player: 2});
 
         $arenas.appendChild(player1.createPlayer());
         $arenas.appendChild(player2.createPlayer());
@@ -63,26 +32,68 @@ class Game {
         //check the Fight button
         $formFight.addEventListener('submit', (e) => {
             e.preventDefault();
-
-            //generate player2(Enemy) attack randomly
-            const enemy = this.randomAttack();
-
-            //from form, read for player1: 1) type of attack 2) type of defence, 3) generate random attack value based on type of attack
-            const attack = this.playerAttack($formFight);
-            //const attack = randomAttack(); //just for test cases for quick clicks
-
-            //in-fight logic
-            this.fightLogic(player1, player2, attack, enemy);
-
-            //game finish
-            if (this.checkEnd(player1, player2)) {
-                $formFight[6].disabled = true;
-                this.chooseWinner(player1, player2);
-                this.createReloadButton();
-            }
+            this.fight($formFight);
         })
 
     }
+    getPlayers = async () => {
+        const body = fetch('https://reactmarathon-api.herokuapp.com/api/mk/players').then(res => res.json());
+        return body;}
+    
+    getRandomPlayer = async () => {
+        const body = fetch('https://reactmarathon-api.herokuapp.com/api/mk/player/choose').then(res => res.json());
+        return body
+}
+    randomApiAttack = async (hit, defence) => {
+    // randomApiAttack = async (props) => {
+        const response = await fetch('http://reactmarathon-api.herokuapp.com/api/mk/player/fight', {
+            method: 'POST',
+            body: JSON.stringify({
+                hit,
+                defence,
+            })
+        });
+        const json = await response.json();
+        return json
+    }
+
+    //read Player1 attack from form 
+    playerAttack = ($formFight) => {
+        var value, hit, defence;
+        for (let item of $formFight) {
+            if (item.checked && item.name === 'hit') {
+                value = getRandom(HITPOWERS[item.value]);
+                hit = item.value;
+                item.checked = false;
+            }
+            if (item.checked && item.name === 'defence') {
+                defence = item.value;
+                item.checked = false;
+            }
+        };
+        return {
+            hit, 
+            defence};}
+        
+    fight = async ($formFight) => {
+         //считываем направление удара с формы
+         const attackDirection = this.playerAttack($formFight);
+
+         const playersAttack = await this.randomApiAttack(attackDirection['hit'],attackDirection['defence']);
+
+         const attack = playersAttack.player1;
+         const enemy = playersAttack.player2;
+     
+         //in-fight logic
+         this.fightLogic(player1, player2, attack, enemy);
+
+         //game finish
+         if (this.checkEnd(player1, player2)) {
+             $formFight[6].disabled = true;
+             this.chooseWinner(player1, player2);
+             this.createReloadButton();
+         }
+    }; 
     //main fight logics
     fightLogic = (player1, player2, attack, enemy) => {
         if (attack.hit !== enemy.defence) {
@@ -132,37 +143,6 @@ class Game {
         }
         $chat.insertAdjacentHTML('afterbegin', el);
 
-    }
-
-    //generate player2(Enemy) attack randomly
-    randomAttack = () => {
-        const hit = BODYAREAS[getRandom(3) - 1];
-        const defence = BODYAREAS[getRandom(3) - 1];
-        return {
-            value: getRandom(HITPOWERS[hit]),
-            hit,
-            defence,
-        }
-    }
-    //make player1 attack based on form 
-    playerAttack = ($formFight) => {
-        var value, hit, defence;
-        for (let item of $formFight) {
-            if (item.checked && item.name === 'hit') {
-                value = getRandom(HITPOWERS[item.value]);
-                hit = item.value;
-                item.checked = false;
-            }
-            if (item.checked && item.name === 'defence') {
-                defence = item.value;
-                item.checked = false;
-            }
-        }
-        return {
-            value,
-            hit,
-            defence,
-        }
     }
 
     //checking if game should be finished
