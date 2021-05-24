@@ -18,7 +18,8 @@ class Game {
 
     start = async () => {
         // let players = await this.getPlayers();
-        const p1= await this.getRandomPlayer();
+        // const p1= await this.getRandomPlayer();
+        const p1 = JSON.parse(localStorage.getItem('player1'));
         const p2 = await this.getRandomPlayer();
         player1 = new Player(
             {...p1, player: 1,});
@@ -79,7 +80,7 @@ class Game {
          //считываем направление удара с формы
          const attackDirection = this.playerAttack($formFight);
 
-         const playersAttack = await this.randomApiAttack(attackDirection['hit'],attackDirection['defence']);
+         const playersAttack = await this.randomApiAttack(attackDirection.hit,attackDirection.defence);
 
          const attack = playersAttack.player1;
          const enemy = playersAttack.player2;
@@ -180,7 +181,7 @@ class Game {
         $reloadButton.innerText = 'Reload';
 
         $reloadButton.addEventListener('click', function () {
-            window.location.reload();
+            window.location.pathname = 'index.html';
         });
 
         $reloadButtonDiv.appendChild($reloadButton);
