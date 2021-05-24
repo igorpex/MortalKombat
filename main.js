@@ -34,7 +34,6 @@ class Game {
         player2 = new Player({...p2, player: 2});
 
 
-
         $arenas.appendChild(player1.createPlayer());
         $arenas.appendChild(player2.createPlayer());
 
@@ -44,13 +43,11 @@ class Game {
         $formFight.addEventListener('submit', (e) => {
             e.preventDefault();
 
-            //generate player2(Enemy) attack randomly
-            const enemy = this.randomAttack();
+            const attackDirection = this.playerAttack($formFight);
 
-            //from form, read for player1: 1) type of attack 2) type of defence, 3) generate random attack value based on type of attack
-            const attack = this.playerAttack($formFight);
-            //const attack = randomAttack(); //just for test cases for quick clicks
-
+            const attack = this.randomApiAttack(attackDirection)['player1'];
+            const enemy = this.randomApiAttack(attackDirection)['player2'];
+        
             //in-fight logic
             this.fightLogic(player1, player2, attack, enemy);
 
@@ -114,18 +111,22 @@ class Game {
 
     }
 
-    //generate player2(Enemy) attack randomly
-    randomAttack = () => {
+    randomApiAttack = async (props) => {
+     
         const hit = BODYAREAS[getRandom(3) - 1];
         const defence = BODYAREAS[getRandom(3) - 1];
-        return {
-            value: getRandom(HITPOWERS[hit]),
-            hit,
-            defence,
-        }
+        const body = fetch('http://reactmarathon-api.herokuapp.com/api/mk/player/fight', {
+            method: 'POST',
+            body: JSON.stringify({
+                props:hit,
+                props:defence,
+            })
+        }).then(res => res.json());
+            return body;
     }
+
     //make player1 attack based on form 
-    playerAttack = ($formFight) => {
+    playerAttack = async ($formFight) => {
         var value, hit, defence;
         for (let item of $formFight) {
             if (item.checked && item.name === 'hit') {
@@ -138,12 +139,7 @@ class Game {
                 item.checked = false;
             }
         }
-        return {
-            value,
-            hit,
-            defence,
-        }
-    }
+        return hit, defence;
 
     //checking if game should be finished
     checkEnd = (player1, player2) => {
