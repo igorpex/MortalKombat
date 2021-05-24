@@ -49,7 +49,7 @@ const $chat = document.querySelector('.chat');
 //main logic
 class Game {
 
-    start = () => {
+    start = function() {
         const character1 = 'scorpion';
         const character2 = 'subzero';
         const player1 = new Player(Object.assign(characters[character1], { player: 1 }));
@@ -61,24 +61,24 @@ class Game {
         this.generateLogs('start', player1, player2, 0);
 
         //check the Fight button
-        $formFight.addEventListener('submit', function (e) {
+        $formFight.addEventListener('submit', (e) => {
             e.preventDefault();
 
             //generate player2(Enemy) attack randomly
-            const enemy = game.randomAttack();
+            const enemy = this.randomAttack();
 
             //from form, read for player1: 1) type of attack 2) type of defence, 3) generate random attack value based on type of attack
-            const attack = game.playerAttack($formFight);
+            const attack = this.playerAttack($formFight);
             //const attack = randomAttack(); //just for test cases for quick clicks
 
             //in-fight logic
-            game.fightLogic(player1, player2, attack, enemy);
+            this.fightLogic(player1, player2, attack, enemy);
 
             //game finish
-            if (game.checkEnd(player1, player2)) {
+            if (this.checkEnd(player1, player2)) {
                 $formFight[6].disabled = true;
-                game.chooseWinner(player1, player2);
-                game.createReloadButton();
+                this.chooseWinner(player1, player2);
+                this.createReloadButton();
             }
         })
 
