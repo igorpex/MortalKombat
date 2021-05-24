@@ -1,4 +1,4 @@
-import { characters } from './characters.js'
+// import { characters } from './characters.js'
 import { LOGS, HITPOWERS, BODYAREAS } from './constants/index.js';
 import { getRandom, createElement } from './utils/index.js';
 import Player from './Player/index.js';
@@ -10,50 +10,27 @@ const $fightButton = document.querySelector('.buttonWrap');
 const $formFight = document.querySelector('.control');
 const $chat = document.querySelector('.chat');
 
-
-
-// //generate player2(Enemy) attack randomly
-// const randomAttack = () => {
-//     const hit = BODYAREAS[getRandom(3) - 1];
-//     const defence = BODYAREAS[getRandom(3) - 1];
-//     return {
-//         value: getRandom(HITPOWERS[hit]),
-//         hit,
-//         defence,
-//     }
-// }
-
-// //make player1 attack based on form 
-// function playerAttack($formFight) {
-//     var value, hit, defence;
-//     for (let item of $formFight) {
-//         if (item.checked && item.name === 'hit') {
-//             value = getRandom(HITPOWERS[item.value]);
-//             hit = item.value;
-//             item.checked = false;
-//         }
-//         if (item.checked && item.name === 'defence') {
-//             defence = item.value;
-//             item.checked = false;
-//         }
-//     }
-//     return {
-//         value,
-//         hit,
-//         defence,
-//     }
-// }
-
-
+let player1;
+let player2;
 
 //main logic
 class Game {
+    getPlayers = async () => {
+        const body = fetch('https://reactmarathon-api.herokuapp.com/api/mk/players').then(res => res.json());
+        return body;}
+    
+    start = async () => {
+        let players = await this.getPlayers();
+        console.log(players);
+        const p1 = players[getRandom(players.length) - 1];
+        const p2 = players[getRandom(players.length) - 1];
+        // const character1 = 'scorpion';
+        // const character2 = 'subzero';
+        player1 = new Player(
+            {...p1, player: 1,});
+        player2 = new Player({...p2, player: 2});
 
-    start = function() {
-        const character1 = 'scorpion';
-        const character2 = 'subzero';
-        const player1 = new Player(Object.assign(characters[character1], { player: 1 }));
-        const player2 = new Player(Object.assign(characters[character2], { player: 2 }));
+
 
         $arenas.appendChild(player1.createPlayer());
         $arenas.appendChild(player2.createPlayer());
