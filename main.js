@@ -15,24 +15,14 @@ let player2;
 
 //main logic
 class Game {
-    getPlayers = async () => {
-        const body = fetch('https://reactmarathon-api.herokuapp.com/api/mk/players').then(res => res.json());
-        return body;}
-    
-    getRandomPlayer = async () => {
-        const body = fetch('https://reactmarathon-api.herokuapp.com/api/mk/player/choose').then(res => res.json());
-        return body;
-}
-    
+
     start = async () => {
-        let players = await this.getPlayers();
-        console.log(players);
+        // let players = await this.getPlayers();
         const p1= await this.getRandomPlayer();
         const p2 = await this.getRandomPlayer();
         player1 = new Player(
             {...p1, player: 1,});
         player2 = new Player({...p2, player: 2});
-
 
         $arenas.appendChild(player1.createPlayer());
         $arenas.appendChild(player2.createPlayer());
@@ -42,24 +32,68 @@ class Game {
         //check the Fight button
         $formFight.addEventListener('submit', (e) => {
             e.preventDefault();
-
-            const attackDirection = this.playerAttack($formFight);
-
-            const attack = this.randomApiAttack(attackDirection)['player1'];
-            const enemy = this.randomApiAttack(attackDirection)['player2'];
-        
-            //in-fight logic
-            this.fightLogic(player1, player2, attack, enemy);
-
-            //game finish
-            if (this.checkEnd(player1, player2)) {
-                $formFight[6].disabled = true;
-                this.chooseWinner(player1, player2);
-                this.createReloadButton();
-            }
+            this.fight($formFight);
         })
 
     }
+    getPlayers = async () => {
+        const body = fetch('https://reactmarathon-api.herokuapp.com/api/mk/players').then(res => res.json());
+        return body;}
+    
+    getRandomPlayer = async () => {
+        const body = fetch('https://reactmarathon-api.herokuapp.com/api/mk/player/choose').then(res => res.json());
+        return body
+}
+    randomApiAttack = async (hit, defence) => {
+    // randomApiAttack = async (props) => {
+        const response = await fetch('http://reactmarathon-api.herokuapp.com/api/mk/player/fight', {
+            method: 'POST',
+            body: JSON.stringify({
+                hit,
+                defence,
+            })
+        });
+        const json = await response.json();
+        return json
+    }
+
+    //read Player1 attack from form 
+    playerAttack = ($formFight) => {
+        var value, hit, defence;
+        for (let item of $formFight) {
+            if (item.checked && item.name === 'hit') {
+                value = getRandom(HITPOWERS[item.value]);
+                hit = item.value;
+                item.checked = false;
+            }
+            if (item.checked && item.name === 'defence') {
+                defence = item.value;
+                item.checked = false;
+            }
+        };
+        return {
+            hit, 
+            defence};}
+        
+    fight = async ($formFight) => {
+         //считываем направление удара с формы
+         const attackDirection = this.playerAttack($formFight);
+
+         const playersAttack = await this.randomApiAttack(attackDirection['hit'],attackDirection['defence']);
+
+         const attack = playersAttack.player1;
+         const enemy = playersAttack.player2;
+     
+         //in-fight logic
+         this.fightLogic(player1, player2, attack, enemy);
+
+         //game finish
+         if (this.checkEnd(player1, player2)) {
+             $formFight[6].disabled = true;
+             this.chooseWinner(player1, player2);
+             this.createReloadButton();
+         }
+    }; 
     //main fight logics
     fightLogic = (player1, player2, attack, enemy) => {
         if (attack.hit !== enemy.defence) {
@@ -110,36 +144,6 @@ class Game {
         $chat.insertAdjacentHTML('afterbegin', el);
 
     }
-
-    randomApiAttack = async (props) => {
-     
-        const hit = BODYAREAS[getRandom(3) - 1];
-        const defence = BODYAREAS[getRandom(3) - 1];
-        const body = fetch('http://reactmarathon-api.herokuapp.com/api/mk/player/fight', {
-            method: 'POST',
-            body: JSON.stringify({
-                props:hit,
-                props:defence,
-            })
-        }).then(res => res.json());
-            return body;
-    }
-
-    //make player1 attack based on form 
-    playerAttack = async ($formFight) => {
-        var value, hit, defence;
-        for (let item of $formFight) {
-            if (item.checked && item.name === 'hit') {
-                value = getRandom(HITPOWERS[item.value]);
-                hit = item.value;
-                item.checked = false;
-            }
-            if (item.checked && item.name === 'defence') {
-                defence = item.value;
-                item.checked = false;
-            }
-        }
-        return hit, defence;
 
     //checking if game should be finished
     checkEnd = (player1, player2) => {
